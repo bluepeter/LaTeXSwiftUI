@@ -26,25 +26,15 @@ import SwiftUI
 
 internal extension Image {
   
-  init(image: _Image, scale: CGFloat = 1.0) {
+  init(image: _Image) {
 #if os(iOS) || os(visionOS)
+    // `UIImage(cgImage:scale:orientation:)` already carries the display
+    // scale, so its `size` is in points.
     self.init(uiImage: image)
 #else
-    if scale > 1.0 {
-      let scaledSize = NSSize(
-          width: image.size.width / scale,
-          height: image.size.height / scale
-      )
-      
-      let scaledImage = image.resized(to: scaledSize)
-      if let representation = image.representations.first {
-        scaledImage.addRepresentation(representation)
-      }
-      
-      self.init(nsImage: scaledImage)
-      return
-    }
-    
+    // `NSImage(cgImage:size:)` is created with the logical size, so its
+    // `size` is already in points — dividing by the display scale again
+    // would lay the image out at half its intended size on Retina screens.
     self.init(nsImage: image)
 #endif
   }
