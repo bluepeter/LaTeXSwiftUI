@@ -1,5 +1,5 @@
 //
-//  Image+Extensions.swift
+//  NSImage+Extensions.swift
 //  LaTeXSwiftUI
 //
 //  Copyright (c) 2023 Colin Campbell
@@ -22,32 +22,26 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-import SwiftUI
-
-internal extension Image {
-  
-  init(image: _Image, scale: CGFloat = 1.0) {
-#if os(iOS) || os(visionOS)
-    self.init(uiImage: image)
-#else
-    self.init(nsImage: Self.imageForDisplay(image, scale: scale))
-#endif
-  }
 
 #if os(macOS)
-  static func imageForDisplay(_ image: _Image, scale: CGFloat) -> _Image {
-    guard scale > 1.0 else { return image }
+import Cocoa
 
-    let scaledSize = NSSize(
-      width: image.size.width / scale,
-      height: image.size.height / scale
-    )
-    let scaledImage = image.resized(to: scaledSize)
-    if let representation = image.representations.first {
-      scaledImage.addRepresentation(representation)
-    }
-    return scaledImage
+internal extension NSImage {
+  
+  /// Resizes the image.
+  /// - Parameter newSize: The image's new size.
+  /// - Returns: A resized image.
+  func resized(to newSize: CGSize) -> NSImage {
+    let newImage = NSImage(size: newSize)
+    newImage.lockFocus()
+    defer { newImage.unlockFocus() }
+    self.draw(
+      in: CGRect(origin: .zero, size: newSize),
+      from: CGRect(origin: .zero, size: self.size),
+      operation: .copy,
+      fraction: 1.0)
+    return newImage
   }
-#endif
   
 }
+#endif

@@ -408,7 +408,9 @@ extension Renderer {
     
     // Check the cache for an image
     if let image = Cache.shared.imageCacheValue(for: cacheKey) {
-      return Image(image: image)
+      // Cached and newly rasterized images must use the same display scale.
+      // Otherwise Retina cache hits render at a different logical size.
+      return Image(image: image, scale: displayScale)
         .renderingMode(renderingMode)
         .antialiased(true)
         .interpolation(.high)
@@ -430,7 +432,7 @@ extension Renderer {
     Cache.shared.setImageCacheValue(image, for: cacheKey)
     
     // Finish up
-    return Image(image: image)
+    return Image(image: image, scale: displayScale)
       .renderingMode(renderingMode)
       .antialiased(true)
       .interpolation(.high)
