@@ -15,8 +15,10 @@ let package = Package(
       targets: ["LaTeXSwiftUI"]),
   ],
   dependencies: [
-     .package(url: "https://github.com/colinc86/MathJaxSwift", from: "3.4.0"),
-     .package(url: "https://github.com/swhitty/SwiftDraw", from: "0.20.1"),
+     // Keep these exact while this fork is used by Cumbersome. Newer compatible
+     // versions have caused valid exponents to fail and equation images to blank.
+     .package(url: "https://github.com/colinc86/MathJaxSwift", exact: "3.4.0"),
+     .package(url: "https://github.com/swhitty/SwiftDraw", exact: "0.27.0"),
      .package(url: "https://github.com/Kitura/swift-html-entities", from: "4.0.1")
   ],
   targets: [
